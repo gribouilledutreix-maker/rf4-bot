@@ -15,8 +15,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install deps
-        run: pip install requests
+- name: Install deps
+  run: pip install requests beautifulsoup4
 
       - name: Add secrets file (for email)
         env:
