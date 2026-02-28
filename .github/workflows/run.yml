@@ -1,0 +1,28 @@
+name: RF4 VK Relay
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Add secrets file (for email)
+        env:
+          MYMEMORY_EMAIL: ${{ secrets.MYMEMORY_EMAIL }}
+        run: |
+          echo "{\"MYMEMORY_EMAIL\":\"$MYMEMORY_EMAIL\"}" > secrets.json
+
+      - name: Run bot
+        run: python bot.py
