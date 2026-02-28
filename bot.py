@@ -1,4 +1,3 @@
-import os
 import json
 import re
 import time
@@ -6,17 +5,13 @@ import hashlib
 from typing import Optional, Dict, Any, List
 
 import requests
+import xml.etree.ElementTree as ET
 
-VK_DOMAIN = "pp4farmtrof"
-VK_API_VERSION = "5.131"
+RSS_URL = "https://rsshub.app/vk/user/pp4farmtrof"
 
 CONFIG_FILE = "config.json"
 STATE_FILE = "state.json"
 CACHE_FILE = "translate_cache.json"
-
-VK_TOKEN = os.environ.get("VK_TOKEN")
-
-UA = "RF4FR-DiscordRelay/1.0"
 
 
 def load_json(path, default):
@@ -41,45 +36,10 @@ def extract_hashtags(text: str) -> List[str]:
     return [norm("#" + t) for t in raw]
 
 
-def discord_post(webhook_url: str, content: str, image_url: Optional[str] = None):
-    payload: Dict[str, Any] = {"content": content}
-    if image_url:
-        payload["embeds"] = [{"image": {"url": image_url}}]
+def discord_post(webhook_url: str, content: str):
+    payload = {"content": content}
     r = requests.post(webhook_url, json=payload, timeout=25)
     r.raise_for_status()
-
-
-def vk_wall_get(count=10) -> list[dict]:
-    if not VK_TOKEN:
-        raise SystemExit("VK_TOKEN manquant dans GitHub Secrets")
-
-    url = "https://api.vk.com/method/wall.get"
-    params = {
-        "domain": VK_DOMAIN,
-        "count": count,
-        "v": VK_API_VERSION,
-        "access_token": VK_TOKEN
-    }
-
-    r = requests.get(url, params=params, timeout=30)
-    r.raise_for_status()
-
-    j = r.json()
-
-    if "error" in j:
-        raise RuntimeError(j["error"])
-
-    return j["response"]["items"]
-
-
-def pick_best_photo_url(item: dict) -> Optional[str]:
-    for att in item.get("attachments", []):
-        if att.get("type") == "photo":
-            sizes = att.get("photo", {}).get("sizes", [])
-            if sizes:
-                best = max(sizes, key=lambda s: s.get("width", 0) * s.get("height", 0))
-                return best.get("url")
-    return None
 
 
 def mymemory_translate_short(text_ru: str, cache: dict) -> str:
@@ -105,6 +65,32 @@ def mymemory_translate_short(text_ru: str, cache: dict) -> str:
     return fr
 
 
+def fetch_rss_posts():
+    r = requests.get(RSS_URL, timeout=30)
+    r.raise_for_status()
+
+    root = ET.fromstring(r.content)
+
+    posts = []
+
+    for item in root.findall(".//item"):
+        title = item.find("title").text or ""
+        link = item.find("link").text or ""
+        description = item.find("description").text or ""
+
+        text = title + "\n" + description
+
+        post_id = hashlib.md5(link.encode("utf-8")).hexdigest()
+
+        posts.append({
+            "id": post_id,
+            "url": link,
+            "text": text
+        })
+
+    return posts
+
+
 def main():
     config = load_json(CONFIG_FILE, {})
     routes = {norm(k): v for k, v in config.get("routes", {}).items()}
@@ -117,21 +103,17 @@ def main():
     seen = set(state.get("seen", []))
     cache = load_json(CACHE_FILE, {})
 
-    items = vk_wall_get(count=15)
+    posts = fetch_rss_posts()
 
-    print("Posts récupérés depuis VK =", len(items))
+    print("Posts RSS récupérés =", len(posts))
 
     sent = 0
 
-    for it in reversed(items):
-        post_id = f"{it.get('owner_id')}_{it.get('id')}"
-
-        if post_id in seen:
+    for p in reversed(posts):
+        if p["id"] in seen:
             continue
 
-        text_ru = it.get("text", "")
-        tags = extract_hashtags(text_ru)
-
+        tags = extract_hashtags(p["text"])
         chosen = None
 
         for t in tags:
@@ -146,21 +128,18 @@ def main():
         else:
             lake_tag, lake_fr, webhook = "(non détecté)", "À trier", default_webhook
 
-        photo_url = pick_best_photo_url(it)
-        post_url = f"https://vk.com/wall{post_id}"
-
-        fr = mymemory_translate_short(text_ru, cache)
+        fr = mymemory_translate_short(p["text"], cache)
 
         msg = (
             f"🎣 Nouvelle capture\n"
             f"📍 Lac : {lake_fr} ({lake_tag})\n"
-            f"🔗 {post_url}\n\n"
+            f"🔗 {p['url']}\n\n"
             f"🇫🇷 {fr}"
         )
 
-        discord_post(webhook, msg, image_url=photo_url)
+        discord_post(webhook, msg)
 
-        seen.add(post_id)
+        seen.add(p["id"])
         sent += 1
         time.sleep(1)
 
