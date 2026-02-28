@@ -1,4 +1,4 @@
-name: RF4 VK Relay
+name: RF4 Bot
 
 on:
   schedule:
@@ -8,17 +8,20 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-- name: Install deps
-  run: pip install requests beautifulsoup4
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
 
-      - name: Add secrets file (for email)
+      - name: Create secrets file for MyMemory (optional)
         env:
           MYMEMORY_EMAIL: ${{ secrets.MYMEMORY_EMAIL }}
         run: |
