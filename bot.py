@@ -60,7 +60,6 @@ def mymemory_translate_short(text_ru: str, cache: dict, email: Optional[str]) ->
 
     base = "https://api.mymemory.translated.net/get"
     params = {"q": short, "langpair": "ru|fr"}
-
     if email:
         params["de"] = email
 
@@ -73,45 +72,119 @@ def mymemory_translate_short(text_ru: str, cache: dict, email: Optional[str]) ->
     return fr
 
 
+def safe_snip(s: str, n: int = 400) -> str:
+    s = (s or "").replace("\n", " ").replace("\r", " ")
+    s = re.sub(r"\s+", " ", s).strip()
+    return s[:n]
+
+
+def pick_best_img_from_container(container) -> Optional[str]:
+    # VK mobile: img src parfois en //... ou https://...
+    imgs = container.select("img[src]")
+    if not imgs:
+        return None
+
+    # on prend la 1ère image "grande" si possible, sinon la 1ère
+    best = None
+    best_len = -1
+    for img in imgs:
+        src = img.get("src")
+        if not src:
+            continue
+        if src.startswith("//"):
+            src = "https:" + src
+        if "userapi" in src or "vkuser" in src or "vk.com" in src:
+            score = len(src)
+        else:
+            score = len(src)
+        if score > best_len:
+            best_len = score
+            best = src
+    return best
+
+
+def find_post_container(a_tag):
+    """
+    On remonte dans les parents pour trouver un bloc qui ressemble à un post.
+    Heuristique: un parent qui contient du texte + potentiellement images.
+    """
+    cur = a_tag
+    for _ in range(8):
+        if not cur:
+            break
+        # si le bloc contient plusieurs liens wall ou beaucoup de texte, c'est probablement un post
+        text = cur.get_text(" ", strip=True)
+        wall_links = cur.select('a[href*="/wall"]')
+        if len(text) > 80 and len(wall_links) >= 1:
+            return cur
+        cur = cur.parent
+    return a_tag.parent
+
+
 def fetch_posts_mobile(limit=12) -> List[dict]:
     print("Connexion à VK mobile...")
     r = requests.get(VK_MOBILE_URL, headers=HEADERS, timeout=30)
     print("Statut HTTP VK =", r.status_code)
-
     r.raise_for_status()
 
-    soup = BeautifulSoup(r.text, "html.parser")
+    html = r.text or ""
+    print("Taille HTML =", len(html))
 
-    items = soup.select(".wall_item")
+    soup = BeautifulSoup(html, "html.parser")
 
-    print("Nombre d'éléments .wall_item trouvés =", len(items))
+    # DEBUG: page title et un bout de texte
+    title = soup.title.get_text(strip=True) if soup.title else "(pas de title)"
+    body_text = soup.get_text(" ", strip=True)
+    print("Titre page =", safe_snip(title, 120))
+    print("Extrait texte page =", safe_snip(body_text, 250))
 
-    posts = []
+    # Nouvelle stratégie: trouver tous les liens vers /wall (posts)
+    wall_as = soup.select('a[href*="/wall"]')
+    print("Nombre de liens /wall trouvés =", len(wall_as))
 
-    for it in items:
-        text = it.get_text(" ", strip=True)
+    # Si 0, on affiche un extrait HTML pour adapter ensuite
+    if len(wall_as) == 0:
+        print("DEBUG HTML (début) =", safe_snip(html, 500))
+        # on tente aussi une recherche d'autres patterns
+        for pat in ["wall", "post", "Запись", "Войти", "Sign in", "login"]:
+            if pat.lower() in html.lower():
+                print("DEBUG: pattern trouvé dans HTML =", pat)
+        return []
 
-        if "#" not in text:
+    posts_by_id: Dict[str, dict] = {}
+
+    for a in wall_as:
+        href = a.get("href") or ""
+        # ex: /wall-123_456 ou /wall-123_456?reply=...
+        m = re.search(r"/wall(-?\d+_\d+)", href)
+        if not m:
+            continue
+        pid = m.group(1)
+
+        if pid in posts_by_id:
             continue
 
-        a = it.select_one('a[href*="/wall"]')
-        href = a.get("href") if a else ""
-        m = re.search(r"/wall(-?\d+_\d+)", href or "")
-        post_id = m.group(1) if m else hashlib.md5(text.encode("utf-8")).hexdigest()
+        container = find_post_container(a)
+        text = container.get_text(" ", strip=True)
+        img_url = pick_best_img_from_container(container)
 
-        post_url = "https://vk.com" + href if href.startswith("/") else VK_MOBILE_URL
-
-        img = it.select_one("img")
-        img_url = img.get("src") if img else None
-        if img_url and img_url.startswith("//"):
-            img_url = "https:" + img_url
-
-        posts.append({
-            "id": post_id,
+        post_url = "https://vk.com" + href if href.startswith("/") else href
+        posts_by_id[pid] = {
+            "id": pid,
             "url": post_url,
             "text": text,
             "image_url": img_url
-        })
+        }
+
+    posts = list(posts_by_id.values())
+
+    # On garde ceux qui ont au moins un hashtag (ton besoin)
+    posts = [p for p in posts if "#" in (p.get("text") or "")]
+
+    print("Posts uniques trouvés (avec #) =", len(posts))
+    if posts:
+        print("Exemple post id =", posts[0]["id"])
+        print("Exemple post texte =", safe_snip(posts[0]["text"], 220))
 
     return posts[:limit]
 
@@ -124,20 +197,23 @@ def main():
     if not default_webhook:
         raise SystemExit("default_webhook manquant dans config.json")
 
-    # === TEST DISCORD ===
-    discord_post(default_webhook, "✅ Test : le bot démarre correctement.")
-    print("Message test envoyé sur Discord.")
+    # Email MyMemory optionnel via secrets.json (si tu l'as configuré)
+    secrets = load_json("secrets.json", {})
+    mymemory_email = secrets.get("MYMEMORY_EMAIL")
 
-    state = load_json(STATE_FILE, {"seen": []})
+    state = load_json(STATE_FILE, {"seen": [], "tested": False})
     seen = set(state.get("seen", []))
     cache = load_json(CACHE_FILE, {})
 
+    # Envoi test Discord UNE SEULE FOIS (évite de spam)
+    if not state.get("tested", False):
+        discord_post(default_webhook, "✅ Test : le bot démarre correctement.")
+        print("Message test envoyé sur Discord (une seule fois).")
+        state["tested"] = True
+        save_json(STATE_FILE, state)
+
     posts = fetch_posts_mobile(limit=12)
-
     print("VK: posts récupérés =", len(posts))
-
-    if posts:
-        print("Exemple texte VK :", posts[0]["text"][:200])
 
     sent = 0
 
@@ -160,7 +236,7 @@ def main():
         else:
             lake_tag, lake_fr, webhook = "(non détecté)", "À trier", default_webhook
 
-        fr = mymemory_translate_short(p["text"], cache, None)
+        fr = mymemory_translate_short(p["text"], cache, mymemory_email)
 
         msg = (
             f"🎣 Nouvelle capture\n"
