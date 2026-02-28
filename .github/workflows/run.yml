@@ -19,13 +19,9 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install requests beautifulsoup4
-
-      - name: Create secrets file for MyMemory (optional)
-        env:
-          MYMEMORY_EMAIL: ${{ secrets.MYMEMORY_EMAIL }}
-        run: |
-          echo "{\"MYMEMORY_EMAIL\":\"$MYMEMORY_EMAIL\"}" > secrets.json
+        run: pip install requests
 
       - name: Run bot
+        env:
+          VK_TOKEN: ${{ secrets.VK_TOKEN }}
         run: python bot.py
