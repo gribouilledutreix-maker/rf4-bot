@@ -1,23 +1,144 @@
-{
-  "default_webhook": "https://discord.com/api/webhooks/1477077823008149647/8JndYmAx54Fhu68oxgVTtRTXVqenRbcY8tjRvKFhAStVL7dTToeSLWL4lPDIDrwFSE-r",
-  "routes": {
-    "#комариное": { "lake_fr": "Lac aux moustiques", "webhook": "https://discord.com/api/webhooks/1477058461358620692/44um1w8vmLXj2dLtT5lCPy6gxbM8tnAM5VcjRHMY7hMCiR1U7emEEOTKp_KVqia3KMMy" },
-    "#лосиное":   { "lake_fr": "Elk Lake", "webhook": "https://discord.com/api/webhooks/1477057887347019799/5yy6SrQvp54c5tbSpQkwxJo-96-9u85Ir3Y4M-yZEL3atHLi9W090NAJqRe3YLaE-tpW" },
-    "#вьюнок":    { "lake_fr": "Ruisseau sinueux", "webhook": "https://discord.com/api/webhooks/1477057892099166354/7kVphoZQz1FGQbl9GMpAEMb5jDN8qjpgFwWtJd7TuCxWSUCQoxtZl5nSzAS3XJClVQpA" },
-    "#острог":    { "lake_fr": "Lac du vieux bourg", "webhook": "https://discord.com/api/webhooks/1477057866434216047/QsIOaVGg_TRgyxA5yr9Lgxh4kjfKx9ZxaWfDh3vSEElaT5Dr74WgQ27dSVFsFoD8DL7f" },
-    "#белая":     { "lake_fr": "Rivière Belaya", "webhook": "https://discord.com/api/webhooks/1477057894632656939/HoiGPmB579v02bJ7yttaX3Uqg1VxAfnDXoEO-6FwjicHHEu566t-tBrJfpGr2EwPv7x5" },
-    "#куори":     { "lake_fr": "Lac Kuori", "webhook": "https://discord.com/api/webhooks/1477057898730360985/_VbMmiO0_tk7qIb5-puKeTFWiKsgciNQaLyvBrZe4r0Ixi5knzmqkKpW4HgcoyxuCuaw" },
-    "#медвежье":  { "lake_fr": "Lac des Ours", "webhook": "https://discord.com/api/webhooks/1477057901599129802/9mU4QAXfKGEd0d9tXYhcJt3KhqpO8yQp3-AU3TxiZAFFl8-4KG0QzQ-_07zNdgaWAg-B" },
-    "#волхов":    { "lake_fr": "Rivière Volkhov", "webhook": "https://discord.com/api/webhooks/1477057903507673160/gBgYr3zDLVZGPUQW10_rOSRfXRYW_TF2xjR4UU4ylzFQTxU8M4wnXjE1k80f8RMmLNGW" },
-    "#донец":     { "lake_fr": "Severski Donets", "webhook": "https://discord.com/api/webhooks/1477057905235857510/CKkiB0Nn2czCwF8bq2nrNE8y5zuILsbWlcWwU2YA3IKURyuswQXrTAX9EWiPQ-TWxx-O" },
-    "#сура":      { "lake_fr": "Rivière Sura", "webhook": "https://discord.com/api/webhooks/1477065393649615051/zf1KID-d4_YI5-w12s3tnJV3S_vJ_DUR4r_Z1deFeQwSssMOuJXoztEeOINnCyKXFSdE" },
-    "#ладожское": { "lake_fr": "Lac Ladoga", "webhook": "https://discord.com/api/webhooks/1477057896993919178/TwtLSErHjz7lX-dH6ctTIVPmXzSUoRw94fvSIdIqdxQ_3STuI15jydTeMlzl-LcxLjdn" },
-    "#янтарное":  { "lake_fr": "Lac Ambre", "webhook": "https://discord.com/api/webhooks/1477057907056054322/iNWWDGWPX1tCA3gEPvbbU4MMPEVhNRjsA5bymLc3ELfMgNz9l9Utwb2ZJpBzHmgfqA97" },
-    "#архипелаг": { "lake_fr": "Archipel de Ladoga", "webhook": "https://discord.com/api/webhooks/1477058207435194481/4WxUMiwc0LrnFKZi523KhJGUh6T7sfVAtYvwv50769K2SmkOpnUdycv0ODKcA-hQtlGU" },
-    "#ахтуба":    { "lake_fr": "Rivière Akhtuba", "webhook": "https://discord.com/api/webhooks/1477058213747884043/cmLo7R458o8Va-AkNtdmUN2Jd5DiPvaPgT_KYu4evE1eY70o8j19YrEpaCr3xaVV_nYB" },
-    "#медное":    { "lake_fr": "Lac Cuivré", "webhook": "https://discord.com/api/webhooks/1477058216633434162/jOLvLs7k_3dFxo0adcNOQhomaC4QXRUcjtlukKejGqUONlMK-VFRokytZOIGHzrRXy0q" },
-    "#тунгуска":  { "lake_fr": "Toungouska inférieure", "webhook": "https://discord.com/api/webhooks/1477058390911090688/DAcd7xGTV4JbIEpTlHeZaFdTHP_MtgtBqBsMVOwpvHZW6sqtXkom1upq54ObuUfMZq6V" },
-    "#яма":       { "lake_fr": "Rivière Yama", "webhook": "https://discord.com/api/webhooks/1477058418530324510/6CGfVzERg6msnN2symFTnm52lh7_DrcsXUXe8VSp4mCqWg2PONWWqCZug4pAG_H07pEa" },
-    "#норвежское":{ "lake_fr": "Mer de Norvège", "webhook": "https://discord.com/api/webhooks/1477058441225834546/NyCRRLM4itygyMtX52UTyIpiSIsNBc_vH1e9E6hojXMw10o5hMoSY5UPY2O1JN_STZDM" }
-  }
-}
+import json, re, time, hashlib
+from typing import Optional, Dict, Any, List
+import requests
+
+VK_DOMAIN = "pp4farmtrof"
+VK_API_VERSION = "5.131"
+CONFIG_FILE = "config.json"
+
+STATE_FILE = "state.json"
+CACHE_FILE = "translate_cache.json"
+
+UA = "RF4FR-DiscordRelay/1.0"
+
+def load_json(path, default=None):
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return default
+
+def save_json(path, data):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+def norm(s: str) -> str:
+    return (s or "").strip().lower().replace("ё", "е")
+
+def extract_hashtags(text: str) -> List[str]:
+    raw = re.findall(r"#([0-9A-Za-zА-Яа-яЁё_\.]+)", text or "")
+    return [norm("#" + t) for t in raw]
+
+def discord_post(webhook_url: str, content: str, image_url: Optional[str] = None):
+    payload: Dict[str, Any] = {"content": content}
+    if image_url:
+        payload["embeds"] = [{"image": {"url": image_url}}]
+    r = requests.post(webhook_url, json=payload, timeout=20)
+    r.raise_for_status()
+
+def vk_wall_get(count=10) -> list[dict]:
+    url = "https://api.vk.com/method/wall.get"
+    params = {"domain": VK_DOMAIN, "count": count, "v": VK_API_VERSION}
+    r = requests.get(url, params=params, timeout=30, headers={"User-Agent": UA})
+    r.raise_for_status()
+    j = r.json()
+    if "error" in j:
+        raise RuntimeError(j["error"])
+    return j["response"]["items"]
+
+def pick_best_photo_url(item: dict) -> Optional[str]:
+    for att in item.get("attachments", []):
+        if att.get("type") == "photo":
+            sizes = att.get("photo", {}).get("sizes", [])
+            if sizes:
+                best = max(sizes, key=lambda s: s.get("width", 0) * s.get("height", 0))
+                return best.get("url")
+    return None
+
+def mymemory_translate_short(text_ru: str, cache: dict, email: Optional[str]) -> str:
+    text_ru = (text_ru or "").strip()
+    if not text_ru:
+        return ""
+    short = text_ru[:350]
+    key = hashlib.md5(short.encode("utf-8")).hexdigest()
+    if key in cache:
+        return cache[key]
+
+    base = "https://api.mymemory.translated.net/get"
+    params = {"q": short, "langpair": "ru|fr"}
+    if email:
+        params["de"] = email
+
+    r = requests.get(base, params=params, timeout=30)
+    r.raise_for_status()
+    j = r.json()
+    fr = j.get("responseData", {}).get("translatedText", "") or short
+    cache[key] = fr
+    return fr
+
+def main():
+    config = load_json(CONFIG_FILE, {})
+    routes = {norm(k): v for k, v in config.get("routes", {}).items()}  # IMPORTANT: "routes"
+    default_webhook = config.get("default_webhook")
+    if not default_webhook:
+        raise SystemExit("config.json: default_webhook manquant")
+
+    # email MyMemory (optionnel) via GitHub Secret
+    email = load_json("secrets.json", {}).get("MYMEMORY_EMAIL") if load_json("secrets.json", {}) else None
+
+    state = load_json(STATE_FILE, {"seen": []})
+    seen = set(state.get("seen", []))
+    cache = load_json(CACHE_FILE, {})
+
+    items = vk_wall_get(count=15)
+    items = list(reversed(items))
+
+    posted = 0
+    for it in items:
+        post_id = f"{it.get('owner_id')}_{it.get('id')}"
+        if post_id in seen:
+            continue
+
+        text_ru = it.get("text", "")
+        tags = extract_hashtags(text_ru)
+
+        chosen = None
+        for t in tags:
+            if t in routes:
+                chosen = (t, routes[t])
+                break
+
+        if chosen:
+            lake_tag, route = chosen
+            lake_fr = route.get("lake_fr", "Lac inconnu")
+            webhook = route.get("webhook", default_webhook)
+        else:
+            lake_tag, lake_fr, webhook = "(non détecté)", "À trier", default_webhook
+
+        photo_url = pick_best_photo_url(it)
+        post_url = f"https://vk.com/{VK_DOMAIN}?w=wall{it.get('owner_id')}_{it.get('id')}"
+
+        fr = mymemory_translate_short(text_ru, cache, email)
+
+        msg = (
+            f"🎣 Nouvelle capture\n"
+            f"📍 Lac : {lake_fr} ({lake_tag})\n"
+            f"🔗 {post_url}"
+        )
+        if fr:
+            msg += f"\n\n🇫🇷 {fr}"
+
+        discord_post(webhook, msg, image_url=photo_url)
+
+        seen.add(post_id)
+        posted += 1
+        time.sleep(1.2)
+        if posted >= 6:
+            break
+
+    state["seen"] = list(seen)[-5000:]
+    save_json(STATE_FILE, state)
+    save_json(CACHE_FILE, cache)
+
+if __name__ == "__main__":
+    main()
